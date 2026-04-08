@@ -155,7 +155,6 @@ exit
 ```
 
 ### 2.5 🕒 Sync System Clock
-# timedatectl
 ```
 timedatectl set-ntp true
 timedatectl status
