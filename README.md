@@ -5,6 +5,7 @@
 + Firmware: UEFI
 + Partition Table: GPT
 + Filesystem: BTRFS
++ SNAPSHOTS: SNAPPER
 + Bootloader: GRUB
 + Disk Type: SSD / NVMe
 + Network: Ethernet or Wi-Fi
@@ -22,6 +23,7 @@ Before installing, make sure to read the [Official Wiki](https://wiki.archlinux.
 ```
 archlinux-YYYY.MM.DD-x86_64.iso
 ```
+
 + #### Option 2 — Torrent (Recommended)
   Use qBittorrent for faster and resumable download:
   + Install [qBittorrent](https://www.qbittorrent.org/);
@@ -54,14 +56,18 @@ gpg --keyserver-options auto-key-retrieve --verify archlinux-<version>-x86_64.is
 + Choose Arch ISO (via Ventoy).
 
 ### 2.1 🌐 Connect to Internet
-+ Ethernet:
++ Test Connection:
 ```
 ping archlinux.org
 ```
 + Wi-Fi:
 ```
 iwctl
+device list
+station wlan0 scan
+station wlan0 get-networks
 station wlan0 connect YOUR_WIFI
+exit
 ```
 
 You can install via archinstall script that automates the process or the manual way.
@@ -112,10 +118,10 @@ You can install via archinstall script that automates the process or the manual 
     + Additional Packages:
     + Timezone:
     + Automatic Time Sync (NTP):
-
 + Install
 
-+ #### Option 2 — Manual
++ #### Option 2 — Manual Installation
+I am still working in this part, do not use
 
 ### 2.2 ⌨️ Set Keyboard Layout
 + List all Layouts:
@@ -127,33 +133,72 @@ You can install via archinstall script that automates the process or the manual 
 # loadkeys br-abnt2
 ```
 
-### 2.3 Verify the boot mode
+### 2.3 🔍 Verify Boot Mode (UEFI)
+```
+ls /sys/firmware/efi/efivars
+```
+✔️ If the directory exists → UEFI mode is active
 
 ### 2.4 🌐 Connect to Internet
-+ Ethernet:
++ Test connection:
 ```
 ping archlinux.org
 ```
 + Wi-Fi:
 ```
 iwctl
+device list
+station wlan0 scan
+station wlan0 get-networks
 station wlan0 connect YOUR_WIFI
+exit
 ```
 
-### 2.5 🕒 Sync Time
+### 2.5 🕒 Sync System Clock
 # timedatectl
 ```
 timedatectl set-ntp true
+timedatectl status
 ```
 
-Partition the disks
+### 2.6 💾 Partition the Disk
++ List disks:
+```
+lsblk
+```
++ Partition using `fdisk`:
+```
+fdisk /dev/the_disk_to_be_partitioned
+```
++ Create:
 
-Format the partitions
 
-Mount the file systems
+### 2.7 🧱 Format Partitions
++ EFI:
+```
+mkfs.fat -F32 /dev/root_partition
+```
++ Root (BTRFS):
+```
+mkfs.btrfs /dev/swap_partition
+```
 
-Select the mirrors
+### 2.8 📂 Mount File Systems
+```
+mount /dev/root_partition /mnt
+mount --mkdir /dev/efi_system_partition /mnt/boot
+swapon /dev/swap_partition
+```
 
-Install essential packages
+### 2.9 🌐 Select Mirrors
+```
+
+```
+
+### 2.10 📦 Install Essential Packages
+```
+pacstrap -K /mnt base linux linux-firmware
+```
+
 
 Configure the system
