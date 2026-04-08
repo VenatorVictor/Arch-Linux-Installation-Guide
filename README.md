@@ -201,3 +201,5 @@ pacstrap -K /mnt base linux linux-firmware
 
 
 Configure the system
+[General Recommendations](https://wiki.archlinux.org/title/General_recommendations)
+[System Maintenance](https://wiki.archlinux.org/title/System_maintenance)
